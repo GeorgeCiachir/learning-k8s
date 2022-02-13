@@ -1,0 +1,9 @@
+On Linode
+- access via the node, with the exposed port 31111 (see in the svc-nodeport.yml):
+    http://139.162.171.189:31111/hello/George
+- access using the load balancer (it exposes port 80, so it can be omitted):
+    http://194.195.247.20/hello/George
+
+On docker-desktop
+- access via the load balancer:
+    http://localhost/hello/George

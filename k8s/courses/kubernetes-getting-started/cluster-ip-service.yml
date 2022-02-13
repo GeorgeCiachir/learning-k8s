@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  # this a service receives an internal cluster IP
+  # the name is registered by an internal cluster DNS service
+  # the service inside the cluster will use this name to forward the request to this service and then to
+  # the particular pods this service is fronting (see the label in the selector below)
+  name: web-application-svc
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80 # the cluster (internal) port on which this service listens on and then forwards the request to the targetPort (the container port)
+      targetPort: 8080 # the port the container is listening on
+  selector:
+    app: web

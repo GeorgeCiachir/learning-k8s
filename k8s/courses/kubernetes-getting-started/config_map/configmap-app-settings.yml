@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-settings
+  labels:
+    app: app-settings
+data:
+  CONFIG_MAP_SETTINGS_htmlVolumeMountPath: "/app-volume"
+  CONFIG_MAP_SETTINGS_settingsVolumeMountPath: "/app-settings"
+  CONFIG_MAP_SETTINGS_secretsVolumeMountPath: "/app-secrets"
+  CONFIG_MAP_SETTINGS_otherSetting: "3"

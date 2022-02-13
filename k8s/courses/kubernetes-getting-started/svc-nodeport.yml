@@ -1,0 +1,29 @@
+# this service is useful for inter-services communication within the cluster, as it's name is registered by the internal DNS service
+# it can also be accessed from the internet, on the node ip, using the declared nodePort below, but it's not really recommended
+apiVersion: v1
+kind: Service
+metadata:
+  # this a service receives an internal cluster IP
+  # the name is registered by an internal cluster DNS service
+  # the service inside the cluster will use this name to forward the request to this service and then to
+  # the particular pods this service is fronting (see the label in the selector below)
+  name: svc-for-web
+spec:
+  type: NodePort
+  ports:
+    # can execute the command on the node's ip on the nodePort(in this case 31111), and it will get forwarded to the
+    # mentioned port on which this service listens (in this case 80)
+    - nodePort: 31111 # the node port on which the node needs to listen on and then forward the request on the internal cluster port
+      port: 80 # the cluster (internal) port on which this service listens on and then forwards the request to the targetPort (the container port)
+      targetPort: 8080 # the port the container is listening on
+      protocol: TCP
+  selector:
+    app: web
+
+
+# we can call on the node IP with the declared nodePort [31111 in this case] from the web, and we can access the container
+# but what if the node goes down ? -> the solution is to use a load balancer (see load-balancer.yml)
+# remember: this service is useful for inter-services communication within the cluster, as it's name is registered by the internal DNS service
+# accessing the containers from the web using the NodePort service is possible, but I wouldn't say is recommended
+# the LoadBalancer service is designed to be exposed on the internet
+

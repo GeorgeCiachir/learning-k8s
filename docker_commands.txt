@@ -1,0 +1,16 @@
+# build the image:
+docker image build -t georgeciachir/small-app:3.0 .
+
+# push the image
+docker push georgeciachir/small-app:3.0
+
+# run the image locally
+docker run -it \
+-v /c/users/omen/desktop/de_invatat/pluralsight/kubernetes/volumes/html:/app-volume \
+-v /c/users/omen/desktop/de_invatat/pluralsight/kubernetes/volumes/app-settings:/app-settings \
+-e APP_SETTINGS_HTML_LOCATION='C:\\Users\\Omen\\Desktop\\de_invatat\\Pluralsight\\Kubernetes\\volumes\\html'
+-e APP_SETTINGS_SETTINGS_LOCATION='C:\\Users\\Omen\\Desktop\\de_invatat\\Pluralsight\\Kubernetes\\volumes\\app-settings'
+-p 8080:8080 \
+georgeciachir/small-app:3.0
+
+docker run -it -v /c/users/omen/desktop/de_invatat/pluralsight/kubernetes/volumes/html:/app-volume -v /c/users/omen/desktop/de_invatat/pluralsight/kubernetes/volumes/app-settings:/app-settings -v /c/users/omen/desktop/de_invatat/pluralsight/kubernetes/volumes/app-secrets:/app-secrets --env-file .\docker_env_file -p 8080:8080 georgeciachir/small-app:3.0

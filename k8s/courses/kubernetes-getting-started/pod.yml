@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hello-pod
+  labels:
+    app: web
+spec:
+  containers:
+    - name: web-ctr
+      image: georgeciachir/small-app:2.0 # if not otherwise specified, the image registry defaults to Dockerhub
+      ports:
+        - containerPort: 8080
+      livenessProbe:
+        httpGet:
+          path: /health
+          port: 8080
+          scheme: HTTP
+        initialDelaySeconds: 5
+        timeoutSeconds: 2
+        periodSeconds: 5
+        failureThreshold: 1
+      readinessProbe:
+        httpGet:
+          path: /readiness
+          port: 8080
+          scheme: HTTP
+        initialDelaySeconds: 15
+        periodSeconds: 5
+
+# create pod (error if already exists) # kubectl create -f pod.yml --save-config
+# kubectl describe pod [pod-name]
+# create or update # kubectl apply -f pod.yml
+# kubectl get pods --watch
+# kubectl get pods --o wide
+# sh into the pod # kubectl exec [pod-name] -it sh
+# kubectl edit -f pod.yml
+# kubectl delete -f pod.yml
+

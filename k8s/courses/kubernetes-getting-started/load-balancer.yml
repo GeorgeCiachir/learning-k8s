@@ -1,0 +1,14 @@
+# the LoadBalancer service is designed to be exposed on the internet
+# when this service starts it is allocated a static IP address
+apiVersion: v1
+kind: Service
+metadata:
+  name: load-balancer-for-web
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80 # the internet port on which it listens
+      targetPort: 8080 # the pod ports on which it redirects the requests
+  selector:
+    app: web
+

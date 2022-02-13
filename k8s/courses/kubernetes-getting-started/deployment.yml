@@ -1,0 +1,136 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-deployment
+  labels:
+    app: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  minReadySeconds: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0 # no of missing pods allowed during the update, resulting in a (replicas-maxUnavailable) no of available pods
+      maxSurge: 1 # no of pods allowed over the no of replicas resulting in a total of (replicas+maxSurge) , but just while updating
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      terminationGracePeriodSeconds: 1
+      containers:
+        - name: hello-pod
+          image: georgeciachir/small-app:3.0 # if not otherwise specified, the image registry defaults to DockerHub
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+
+          # Individually map env variable data to a ConfigMap or Secret property
+          # Maybe this is a shared config file and not all props are used by this deployment
+          env:
+            - name: APP_SETTINGS_HTML_LOCATION
+              valueFrom:
+                configMapKeyRef:
+                  name: app-settings
+                  key: CONFIG_MAP_SETTINGS_htmlVolumeMountPath
+            - name: APP_SETTINGS_SETTINGS_LOCATION # this is for the settings location
+              valueFrom:
+                configMapKeyRef:
+                  name: app-settings
+                  key: CONFIG_MAP_SETTINGS_settingsVolumeMountPath
+            - name: APP_SETTINGS_SECRETS_LOCATION # this is for the secrets location
+              valueFrom:
+                configMapKeyRef:
+                  name: app-settings
+                  key: CONFIG_MAP_SETTINGS_secretsVolumeMountPath
+            - name: SECRET_APP_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-passwords
+                  key: app-password
+          # Load all values from the ConfigMap (they have a CONFIG_MAP_SETTINGS_* format)
+          envFrom:
+            - configMapRef:
+                name: app-settings
+
+          volumeMounts:
+            - name: pod-volume
+              mountPath: /app-volume
+              readOnly: true
+              # Reference ConfigMap data at appropriate path (/app-settings)
+              # When a volume is used for ConfigMaps, a file is created for each key, having the name of the key, and the value is
+              # written as data inside the file
+              # So, when this setup is used, the created files must be parsed programmatically, and read the content to get the value
+              # Not really useful for simple key/value props
+              # In this case I haven't created a persistent volume, so I don't actually know where the files are stored :D
+              # could be they're on the DockerHost somewhere or maybe an ephemeral volume is created (and dropped each time the pod goes down)
+            - name: app-settings-volume
+              mountPath: /app-settings
+              readOnly: true
+            - name: secrets
+              mountPath: /app-secrets
+              readOnly: true
+
+
+
+
+          # probes
+          # all commented because it takes to long to start the pods (need to wait for the livenessProbe, but it works and can be used
+#          livenessProbe:
+#            httpGet:
+#              path: /health
+#              port: 8080
+#              scheme: HTTP
+#            initialDelaySeconds: 15
+#            timeoutSeconds: 2
+#            periodSeconds: 5
+#            failureThreshold: 1
+#          readinessProbe:
+#            httpGet:
+#              path: /readiness
+#              port: 8080
+#              scheme: HTTP
+#            initialDelaySeconds: 15
+#            periodSeconds: 5
+          # resources
+          resources:
+            limits:
+              memory: 256Mi #128 MB
+              cpu: 200m # 200 millicpu (20% of the cpu)
+      volumes:
+        - name: pod-volume
+          persistentVolumeClaim:
+            claimName: cloud-app-volume-claim
+        # assign a volume for the ConfigMap
+        - name: app-settings-volume
+          configMap:
+            name: app-settings
+        # assign a volume for the Secret
+        - name: secrets
+          secret:
+            secretName: db-passwords
+
+
+# for starting an update (in this case a RollingUpdate), simply update the image field with the new image and then execute:
+# kubectl apply -f deploy.yml
+# the rollout status can be displayed in real-time using # kubectl rollout status deploy web-deployment
+# we can also see the pods terminating and creating in real time with # kubectl get pods --watch
+
+# after the rolling update is done, the initial replica set (the one for the initial image) still exists
+# we can see all replica sets with
+# kubectl get rs
+# kubectl describe rs web-deployment-b7569b44f
+# we can delete the initial RS after th update is done, or we can keep it for a while, in case we need to roll back the update
+
+# Rolling back the update
+# get the revisions for the deployment (web-deployment in this case)
+# kubectl rollout history deploy web-deployment
+# kubectl rollout undo deploy web-deployment --to-revision=1
+
+# kubectl get deployments --show-labels
+# kubectl get deployment [deployment-name] --show-labels
+# kubectl get deployment -l [label-name]=[label-value]
+# kubectl scale deployment [deployment-name] --replicas=5

@@ -1,6 +1,6 @@
 package com.georgeciachir.appforcloud.controller;
 
-import com.georgeciachir.appforcloud.exception.TemplateLocationException;
+import com.georgeciachir.appforcloud.exception.HtmlTemplateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +12,8 @@ public class ErrorController {
 
     private static final Logger log = LoggerFactory.getLogger(ErrorController.class);
 
-    @ExceptionHandler(TemplateLocationException.class)
-    public ResponseEntity<String> handle(TemplateLocationException exception) {
+    @ExceptionHandler(HtmlTemplateException.class)
+    public ResponseEntity<String> handle(HtmlTemplateException exception) {
         log.error("Trouble: ", exception);
         return ResponseEntity.internalServerError()
                 .body(exception.getMessage());

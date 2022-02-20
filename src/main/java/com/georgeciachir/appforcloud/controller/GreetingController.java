@@ -1,6 +1,8 @@
 package com.georgeciachir.appforcloud.controller;
 
-import com.georgeciachir.appforcloud.exception.TemplateLocationException;
+import com.georgeciachir.appforcloud.exception.HtmlTemplateException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,18 +21,21 @@ import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
 @RequestMapping
 public class GreetingController {
 
+    private static final Logger log = LoggerFactory.getLogger(GreetingController.class);
+
     @Value("${htmlLocation}")
     private String htmlLocation;
 
     @GetMapping(value = "/hello/{name}", produces = TEXT_HTML_VALUE)
     public String sayHello(@PathVariable String name) {
+        log.info("Greeting [{}]", name);
         Path htmlTemplateLocation = Paths.get(htmlLocation).resolve("greeting.html");
         try {
             String htmlTemplate = Files.readString(htmlTemplateLocation);
             return format(htmlTemplate, name);
         } catch (IOException e) {
             String errorMessage = format("Could not find the html template at this location: %s", htmlTemplateLocation);
-            throw new TemplateLocationException(errorMessage);
+            throw new HtmlTemplateException(errorMessage, e);
         }
     }
 }

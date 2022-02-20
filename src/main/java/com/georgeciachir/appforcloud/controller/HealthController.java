@@ -27,9 +27,9 @@ public class HealthController {
         log.info("Health check request received. System is: {}", healthy ? "Up" : "Down");
         if (!healthy) {
             return status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Down");
+                    .body("System is down");
         }
-        return ok("Up");
+        return ok("System us up");
     }
 
     @PostMapping("/health/{healthy}")

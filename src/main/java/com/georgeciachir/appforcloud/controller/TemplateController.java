@@ -15,7 +15,7 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 @RequestMapping("/templates")
 public class TemplateController {
 
-    private static final Logger log = LoggerFactory.getLogger(TemplateController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TemplateController.class);
 
     private final TemplateService templateService;
 
@@ -25,7 +25,7 @@ public class TemplateController {
 
     @PutMapping(consumes = MULTIPART_FORM_DATA_VALUE)
     public void updateTemplate(@RequestPart MultipartFile file) {
-        log.info("Update template request received");
+        LOG.info("Update template request received");
         templateService.updateTemplate(file);
     }
 }

@@ -14,6 +14,7 @@ RUN mkdir -p ${LOG_DIR} && \
 # Copy the application artifacts
 
 COPY ./target/app-for-cloud-0.0.1-SNAPSHOT.jar /application/app.jar
+COPY ./target/classes/templates/greeting.html /application/templates/greeting.html
 
 # Change the permissions on the files
 

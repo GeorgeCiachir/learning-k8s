@@ -1,18 +1,12 @@
 package com.georgeciachir.appforcloud.controller;
 
-import com.georgeciachir.appforcloud.exception.HtmlTemplateException;
+import com.georgeciachir.appforcloud.service.TemplateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static java.lang.String.format;
 import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
@@ -21,21 +15,18 @@ import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
 @RequestMapping
 public class GreetingController {
 
-    private static final Logger log = LoggerFactory.getLogger(GreetingController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GreetingController.class);
 
-    @Value("${htmlLocation}")
-    private String htmlLocation;
+    private final TemplateService templateService;
+
+    public GreetingController(TemplateService templateService) {
+        this.templateService = templateService;
+    }
 
     @GetMapping(value = "/hello/{name}", produces = TEXT_HTML_VALUE)
     public String sayHello(@PathVariable String name) {
-        log.info("Greeting [{}]", name);
-        Path htmlTemplateLocation = Paths.get(htmlLocation).resolve("greeting.html");
-        try {
-            String htmlTemplate = Files.readString(htmlTemplateLocation);
-            return format(htmlTemplate, name);
-        } catch (IOException e) {
-            String errorMessage = format("Could not find the html template at this location: %s", htmlTemplateLocation);
-            throw new HtmlTemplateException(errorMessage, e);
-        }
+        LOG.info("Greeting [{}]", name);
+        String htmlTemplate = this.templateService.getTemplate();
+        return format(htmlTemplate, name);
     }
 }

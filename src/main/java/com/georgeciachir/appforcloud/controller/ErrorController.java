@@ -10,18 +10,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class ErrorController {
 
-    private static final Logger log = LoggerFactory.getLogger(ErrorController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ErrorController.class);
 
     @ExceptionHandler(HtmlTemplateException.class)
     public ResponseEntity<String> handle(HtmlTemplateException exception) {
-        log.error("Trouble: ", exception);
+        LOG.error("Trouble: ", exception);
         return ResponseEntity.internalServerError()
                 .body(exception.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handle(Exception exception) {
-        log.error("Trouble: ", exception);
+        LOG.error("Trouble: ", exception);
         return ResponseEntity.internalServerError()
                 .body(exception.getMessage());
     }

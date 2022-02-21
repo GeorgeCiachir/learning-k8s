@@ -5,6 +5,7 @@ metadata:
   labels:
     app: app-settings
 data:
+  CONFIG_MAP_SETTINGS_defaultHtmlLocation: "/application/templates"
   CONFIG_MAP_SETTINGS_htmlVolumeMountPath: "/app-volume"
   CONFIG_MAP_SETTINGS_settingsVolumeMountPath: "/app-settings"
   CONFIG_MAP_SETTINGS_secretsVolumeMountPath: "/app-secrets"

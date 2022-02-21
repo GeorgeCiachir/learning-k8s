@@ -19,12 +19,12 @@ import static org.springframework.http.ResponseEntity.status;
 @RequestMapping
 public class HealthController {
 
-    private static final Logger log = LoggerFactory.getLogger(HealthController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HealthController.class);
     private boolean healthy = true;
 
     @GetMapping("/health")
     public ResponseEntity<String> healthCheck() {
-        log.info("Health check request received. System is: {}", healthy ? "Up" : "Down");
+        LOG.info("Health check request received. System is: {}", healthy ? "Up" : "Down");
         if (!healthy) {
             return status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("System is down");
@@ -34,14 +34,14 @@ public class HealthController {
 
     @PostMapping("/health/{healthy}")
     public void setHealth(@PathVariable boolean healthy) {
-        log.info("Setting health to: {}", healthy ? "Up" : "Down");
+        LOG.info("Setting health to: {}", healthy ? "Up" : "Down");
         this.healthy = healthy;
     }
 
     @ResponseStatus(OK)
     @GetMapping("/readiness")
     public String readiness() {
-        log.info("Readiness check request received");
+        LOG.info("Readiness check request received");
         return "Ready";
     }
 }

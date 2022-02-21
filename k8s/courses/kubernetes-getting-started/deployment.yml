@@ -31,17 +31,22 @@ spec:
           # Individually map env variable data to a ConfigMap or Secret property
           # Maybe this is a shared config file and not all props are used by this deployment
           env:
-            - name: APP_SETTINGS_HTML_LOCATION
+            - name: APP_SETTINGS_HTML_LOCATION # where the application files (such as the greeting html) volume is mounted
               valueFrom:
                 configMapKeyRef:
                   name: app-settings
                   key: CONFIG_MAP_SETTINGS_htmlVolumeMountPath
-            - name: APP_SETTINGS_SETTINGS_LOCATION # this is for the settings location
+            - name: APP_SETTINGS_DEFAULT_HTML_LOCATION
+              valueFrom:
+                configMapKeyRef:
+                  name: app-settings
+                  key: CONFIG_MAP_SETTINGS_defaultHtmlLocation
+            - name: APP_SETTINGS_SETTINGS_LOCATION # where the settings volume is mounted
               valueFrom:
                 configMapKeyRef:
                   name: app-settings
                   key: CONFIG_MAP_SETTINGS_settingsVolumeMountPath
-            - name: APP_SETTINGS_SECRETS_LOCATION # this is for the secrets location
+            - name: APP_SETTINGS_SECRETS_LOCATION # where the secrets volume is mounted
               valueFrom:
                 configMapKeyRef:
                   name: app-settings

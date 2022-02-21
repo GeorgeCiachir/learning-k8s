@@ -24,3 +24,6 @@
 
 ## 3. in K8s
    * for the openshift deployment there is a separate file: `os-cloud-app-deployment.yml` due to some platform specific file adjustments
+   * also, for openshift, it might be required to create a Secret with the username, password and user email from the private registry
+     * in my case, I had to provide openshift with the credentials for DockerHub, because there is only a small number of image pulls allowed for a third party (openshift in this case) so I needed openshift to login as myself
+     * `kubectl create secret docker-registry regcred --docker-server=https://index.docker.io/v1/ --docker-username=your_username --docker-password=your_password --docker-email=your_email`

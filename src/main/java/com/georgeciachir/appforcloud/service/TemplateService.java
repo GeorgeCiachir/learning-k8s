@@ -28,7 +28,7 @@ public class TemplateService {
     public TemplateService(@Value("${defaultHtmlLocation}") String defaultHtmlLocation,
                            @Value("${htmlLocation}") String htmlLocation) {
         this.htmlLocation = htmlLocation;
-        this.initialHtmlTemplate = getContentFromDisk(defaultHtmlLocation);
+        this.initialHtmlTemplate = getInitialContentFromDisk(defaultHtmlLocation);
     }
 
     public String getTemplate() {
@@ -53,6 +53,16 @@ public class TemplateService {
         } catch (IOException e) {
             String errorMessage = format("Could not find the html template at the specified location: %s", htmlTemplateLocation);
             throw new HtmlTemplateException(errorMessage, e);
+        }
+    }
+
+    private static String getInitialContentFromDisk(String htmlLocation) {
+        Path htmlTemplateLocation = Paths.get(htmlLocation).resolve(GREETING_HTML);
+        try {
+            return Files.readString(htmlTemplateLocation);
+        } catch (IOException e) {
+            LOG.warn("Could not find the html template at the specified location: {}", htmlTemplateLocation);
+            return null;
         }
     }
 
